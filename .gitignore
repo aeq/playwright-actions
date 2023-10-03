@@ -1,0 +1,9 @@
+node_modules/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+bin/
+build/
+/test-results/
+/playwright-report/
+/playwright/.cache/
