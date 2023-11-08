@@ -4,6 +4,7 @@ import { ActionContext } from '../types'
 export default {
   isHeadless: false,
   run: async ({ page }: ActionContext) => {
+    console.log('Begin AEQ Search example')
     await page.goto('https://www.google.ca/')
     await page.getByRole('combobox', { name: 'Search' }).fill('aequilibrium')
     await page.getByLabel('Google Search').first().click()

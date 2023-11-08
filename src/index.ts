@@ -1,5 +1,5 @@
 import * as playwright from 'playwright'
-import yargs, { Argv } from 'yargs'
+import yargs from 'yargs'
 import { getActions } from './actions'
 import { Action, ActionContext } from './types'
 
@@ -7,8 +7,8 @@ import { Action, ActionContext } from './types'
 
 const showHelp = (actions: Record<string, Action<unknown>>) => {
   console.log('=== HELP ===')
-  console.log('npm run action [action] --[argument1] --[argument2] ...')
-  console.log('Supported Scenarios:')
+  console.log('npm run action [action] -- --[v|verbse] --[b|browser] ...')
+  console.log('Supported Actions:')
   Object.keys(actions).forEach((name) => console.log(`   - ${name}`))
 }
 
@@ -17,26 +17,23 @@ const main = async () => {
   ////////////////////// ARGUMENTS /////////////////////////
   const argv = await yargs(process.argv.slice(2)).options({
     v: { type: 'boolean', alias: 'verbose', default: false },
+    b: { type: 'boolean', alias: 'browser', default: false },
   }).argv
 
   console.log({ argv })
 
   const actions = await getActions()
 
-  // if (argv._.length === 0) {
-  //   console.log('No action provided')
-  //   process.exit(1)
-  // }
-
   const actionName = argv._[0]
   if (!actions[actionName]) {
+    console.error('Error: Invalid action')
     showHelp(actions)
     process.exit(1)
   }
 
   console.log(`Running action '${actionName}'`)
   const action = actions[actionName]
-  const headless = action.isHeadless
+  const headless = action.isHeadless || !argv.b
   const browser = await playwright.chromium.launch({
     headless,
   })

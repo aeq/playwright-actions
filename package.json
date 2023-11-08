@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "action": "npx tsc && node ./build/src/index.js",
+    "action": "npm run build && node ./build/index.js",
     "build": "npx tsc",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",

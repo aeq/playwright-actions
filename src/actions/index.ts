@@ -9,6 +9,7 @@ const fileNameToActionName = (name: string) => name.substring(0, name.lastIndexO
  */
 export const getActions = async () => {
   const files = await fs.readdir(__dirname)
+  console.log({ files })
 
   return files.reduce(
     (all, f) => {
