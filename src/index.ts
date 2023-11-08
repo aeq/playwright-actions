@@ -20,8 +20,6 @@ const main = async () => {
     b: { type: 'boolean', alias: 'browser', default: false },
   }).argv
 
-  console.log({ argv })
-
   const actions = await getActions()
 
   const actionName = argv._[0]
