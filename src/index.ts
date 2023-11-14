@@ -17,7 +17,7 @@ const main = async () => {
   ////////////////////// ARGUMENTS /////////////////////////
   const argv = await yargs(process.argv.slice(2)).options({
     v: { type: 'boolean', alias: 'verbose', default: false },
-    b: { type: 'boolean', alias: 'browser', default: false },
+    b: { type: 'boolean', alias: 'browser', default: null },
   }).argv
 
   const actions = await getActions()
@@ -31,7 +31,7 @@ const main = async () => {
 
   console.log(`Running action '${actionName}'`)
   const action = actions[actionName]
-  const headless = action.isHeadless || !argv.b
+  const headless = action.isHeadless || argv.b === false
   const browser = await playwright.chromium.launch({
     headless,
   })
