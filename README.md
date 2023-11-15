@@ -12,6 +12,8 @@ This library allows for a structure to use playwright both for tests and as an a
 1. Clone the repository `git clone https://github.com/aeq/playwright-actions.git`
 1. Change to directory `cd playwright-actions`
 1. run `npm i`
+1. Run the google Login setup `npx playwright test auth.setup.ts --headed`
+1. close the browser
 
 ## Commands
 
