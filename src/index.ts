@@ -36,6 +36,7 @@ const main = async () => {
     headless,
   })
   const context = await browser.newContext({
+    storageState: 'playwright/.auth/user.json',
     recordVideo: {
       dir: 'videos/',
       size: { width: 640, height: 480 },

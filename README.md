@@ -17,5 +17,7 @@ This library allows for a structure to use playwright both for tests and as an a
 
 ## Commands
 
+1. Initialize Google Login: `npm run init`
 1. Show help: `npm run action`
 1. Run an action: `npm run action <action-name>` (Example: `npm run action aeq-search`)
+1. Run an action with props: `npm run action <action-name> -- --my-prop=true` (Example: `npm run action aeq-search`)

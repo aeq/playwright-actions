@@ -1,92 +1,73 @@
 import { Page } from 'playwright'
+import { Row } from './types'
 
 export const resetAllRows = async (page: Page) => {
   await page.waitForURL('https://aeq.harvestapp.com/time/week')
 
   const delButtons = page.getByRole('button', { name: /Delete row/i })
+  console.log(await delButtons.count())
 
-  await Promise.all([
-    (await delButtons.all()).map(async (button) => {
-      await button.click()
+  let finished = false
 
+  while (!finished) {
+    const button = await delButtons.first()
+
+    try {
+      await button.click({ timeout: 1000 })
+
+      // confirm modal
       const confirm = page.getByRole('button', { name: 'Confirm delete' })
       if ((await confirm.count()) > 0) {
         await confirm.click()
       }
 
       await page.waitForResponse((response) => response.url().includes('https://aeq.harvestapp.com/entry/remove_row'))
-    }),
-  ])
-  // await page.getByRole('button', { name: /Delete row/i }).click()
-  // await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  // if (countButtons > 0) {
-  //   for (let i = 0; i <= countButtons; i++) {
-  //     con
-  //     await delButtons.nth(i).click()
-  //     // const confirm = page.getByLabel('Confirm delete', { exact: true })
-  //     // if ((await confirm.count()) > 0) {
-  //     //   confirm.click()
-  //     // }
-  //   }
-  // }
+    } catch (e) {
+      finished = true
+      break
+    }
+  }
 
   console.log(await page.locator('div.test-quote').innerHTML())
 }
 
-export const addRow = async (page: Page, row: string) => {
-  await page.getByRole('button', { name: 'Add row' }).click()
-  await page.getByRole('button', { name: 'AEQ AEQ Internal' }).click()
-  await page.getByRole('option', { name: row }).click()
+export const addRows = async (page: Page, rows: Row[]) => {
+  for (const row of rows) {
+    await addRow(page, row)
+  }
+  await hideLargeChangeDetectedModal(page)
+}
 
-  await page.getByRole('option', { name: 'AEQ Internal' }).click()
-  await page.getByRole('button', { name: 'Bench' }).click()
-  await page.getByRole('option', { name: 'Company-wide Meeting' }).click()
+export const addRow = async (page: Page, row: Row) => {
+  const { project, task } = row
+
+  await page.getByRole('button', { name: 'Add row' }).click()
+  await page.locator('button[data-analytics-element-id=project-select]').click()
+  await page.getByRole('option', { name: project }).click()
+
+  await page.locator('button[data-analytics-element-id=task-select]').click()
+  await page.getByRole('option', { name: task }).first().click()
+
   await page.getByRole('button', { name: 'Save row' }).click()
 
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Internal ( AEQ ) Company-wide Meeting Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Hours on Monday, 13 November')
-  //   .click()
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Internal ( AEQ ) Company-wide Meeting Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Hours on Monday, 13 November')
-  //   .click()
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Internal ( AEQ ) Company-wide Meeting Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Hours on Monday, 13 November')
-  //   .fill('1')
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Internal ( AEQ ) Company-wide Meeting Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Delete row')
-  //   .click()
-  // await page.getByRole('button', { name: 'Confirm delete' }).click()
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Time Off ( AEQ ) Paid Sick Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Delete row')
-  //   .click()
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Time Off ( AEQ ) Paid Time Off Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Delete row')
-  //   .click()
-  // await page
-  //   .getByRole('row', {
-  //     name: 'AEQ Time Off ( AEQ ) Statutory Holiday Hours on Monday, 13 November Hours on Tuesday, 14 November Hours on Wednesday, 15 November Hours on Thursday, 16 November Hours on Friday, 17 November Hours on Saturday, 18 November Hours on Sunday, 19 November 0 Delete row',
-  //   })
-  //   .getByLabel('Delete row')
-  //   .click()
-  // await page.getByRole('button', { name: 'Add row' }).click()
-  // await page.getByRole('button', { name: 'NINTENDO [NINTENDO] Consultant Support Services' }).press('Escape')
+  await fillRow(page, row)
+}
+
+export const fillRow = async (page: Page, row: Row) => {
+  const { values } = row
+
+  // await page.getByRole('row', { name: row.task }).getByRole('textbox').nth(2).fill('99')
+
+  // const inputs = page.locator('input[data-analytics-element-id=hours-input]')
+  for (let i = 0; i < values.length; i++) {
+    await page.getByRole('row', { name: row.task }).getByRole('textbox').nth(i).fill(values[i].toString())
+    await hideLargeChangeDetectedModal(page)
+  }
+}
+
+export const hideLargeChangeDetectedModal = async (page: Page) => {
+  const button = page.getByRole('button', { name: 'Close warning' })
+  if (await button.isVisible()) {
+    await button.click()
+  }
 }

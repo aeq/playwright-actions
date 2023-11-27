@@ -23,7 +23,5 @@ setup('authenticate', async ({ page }) => {
   // End of authentication steps.
   await page.context().storageState({ path: authFile })
 
-  await new Promise((resolve) => {
-    page.on('close', resolve)
-  })
+  console.log('Authentication completed. Cookies are saved!')
 })

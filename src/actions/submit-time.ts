@@ -13,9 +13,13 @@ export default {
 
     await page.goto('https://aeq.harvestapp.com/time/week')
     await Harvest.resetAllRows(page)
-    const rowName = 'some row'
-    await Harvest.addRow(page, rowName)
-    await Harvest.fillRow(page, { row: rowName, values: [1, 2, 3, 4, 5, 0, 0] })
-    await Harvest.submitTime(page)
+    const rows = [
+      { project: 'AEQ Internal', task: 'Company-wide Meeting', values: [1, 2, 3] },
+      { project: 'AEQ Time Off', task: 'Paid Sick', values: [0, 0, 4, 5] },
+      { project: 'AEQ Time Off', task: 'Paid Time Off', values: [0, 0, 0, 0, 0, 8] },
+    ]
+
+    await Harvest.addRows(page, rows)
+    // await Harvest.submitTime(page)
   },
 }
