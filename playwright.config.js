@@ -45,16 +45,23 @@ module.exports = defineConfig({
         storageState: 'playwright/.auth/user.json',
       },
     },
-
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'], storageState: 'playwright/.auth/user.json' },
+      name: 'Mobile Safari',
+      use: {
+        ...devices['iPhone 13'],
+        video: 'on',
+      },
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], storageState: 'playwright/.auth/user.json' },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'], storageState: 'playwright/.auth/user.json' },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'], storageState: 'playwright/.auth/user.json' },
+    // },
 
     /* Test against mobile viewports. */
     // {
